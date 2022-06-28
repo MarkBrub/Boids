@@ -14,10 +14,10 @@ public:
 		ImGui::Begin("Settings");
 		ImGui::Text("Average Render Time: %.2f", m_QueueTotal / std::max((int)m_FrameLengths.size(), 1));
 		ImGui::SliderInt("Boid Count", &m_BoidCount, 0, 1000, "%d", 0);
-		ImGui::SliderInt("Seperation", &m_SeperationSlider, 1, 50, "%d", 0);
-		ImGui::SliderInt("Alignment", &m_AlignmentSlider, 1, 500, "%d", 0);
-		ImGui::SliderInt("Cohesion", &m_CohesionSlider, 1, 550, "%d", 0);
-		ImGui::SliderInt("Max Speed", &m_MaxSpeed, 0, 10, "%d", 0);
+		ImGui::SliderInt("Seperation", &m_SeperationSlider, 0, 30, "%d", 0);
+		ImGui::SliderInt("Alignment", &m_AlignmentSlider, 0, 500, "%d", 0);
+		ImGui::SliderInt("Cohesion", &m_CohesionSlider, 0, 500, "%d", 0);
+		ImGui::SliderInt("Max Speed", &m_MaxSpeed, 0, 20, "%d", 0);
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -52,13 +52,13 @@ public:
 			m_Controller.ChangePopulationSize(m_BoidCount);
 		}
 		if (m_SeperationSlider != m_Controller.seperation) {
-			m_Controller.seperation = m_SeperationSlider;
+			m_Controller.seperation = 31 - m_SeperationSlider;
 		}
 		if (m_AlignmentSlider != m_Controller.alignment) {
-			m_Controller.alignment = m_AlignmentSlider;
+			m_Controller.alignment = 501 - m_AlignmentSlider;
 		}
 		if (m_CohesionSlider != m_Controller.cohesion) {
-			m_Controller.cohesion = m_CohesionSlider;
+			m_Controller.cohesion = 501 - m_CohesionSlider;
 		}
 		if (m_MaxSpeed != m_Controller.maxSpeed) {
 			m_Controller.maxSpeed = m_MaxSpeed;
@@ -98,9 +98,9 @@ private:
 	float m_QueueTotal = 0;
 	FlightControl m_Controller;
 	int m_BoidCount = 1000;
-	int m_SeperationSlider = 16;
+	int m_SeperationSlider = 15;
 	int m_AlignmentSlider = 250;
-	int m_CohesionSlider = 350;
+	int m_CohesionSlider = 250;
 	int m_MaxSpeed = 3;
 };
 
