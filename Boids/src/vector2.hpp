@@ -75,6 +75,10 @@ struct Vector2 {
 		return sqrt(((lhs.x - rhs.x) * (lhs.x - rhs.x)) + ((lhs.y - rhs.y) * (lhs.y - rhs.y)));
 	}
 
+	friend double distSquared(const Vector2& lhs, const Vector2& rhs) {
+		return ((lhs.x - rhs.x) * (lhs.x - rhs.x)) + ((lhs.y - rhs.y) * (lhs.y - rhs.y));
+	}
+
 	friend float sign(const Vector2& v1, const Vector2& v2, const Vector2& v3) {
 		return (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
 	}

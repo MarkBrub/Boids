@@ -19,6 +19,11 @@ void FlightControl::ChangePopulationSize(const int newCount) {
 }
 
 void FlightControl::AdvanceFrame() {
+	// Updated cached values
+	m_VisionRadiusSquared = visionRadius * visionRadius;
+	m_AvoidanceRadiusSquared = avoidanceRadius * avoidanceRadius;
+	m_fieldOfViewRange = (360 - fieldOfView) / 180 - 1; // Convert field of view to a [-1, 1] range
+
 	for (auto& boid : m_Boids) {
 
 		boid.velocity += Acceleration(boid);
@@ -107,14 +112,11 @@ Vector2 FlightControl::Acceleration(const Boid& self) {
 	int closeBoids = 0;
 	int reallyCloseBoids = 0;
 
-	// Convert field of view to a [-1, 1] range
-	double fieldOfViewRange = (360 - fieldOfView) / 180 - 1;
-
-	for (auto& boid : m_Boids) {
+	for (const auto& boid : m_Boids) {
 		// For all other boids in perception range
-		if (boid != self && dist(boid.position, self.position) < visionRadius) {
-			if ((boid.position - self.position).normalize() * self.velocity.normalize() < fieldOfViewRange) continue;
-			if (dist(boid.position, self.position) < avoidanceRadius) {
+		if (boid != self && distSquared(boid.position, self.position) < m_VisionRadiusSquared) {
+			if ((boid.position - self.position).normalize() * self.velocity.normalize() < m_fieldOfViewRange) continue;
+			if (distSquared(boid.position, self.position) < m_AvoidanceRadiusSquared) {
 				seperationVec -= boid.position - self.position;
 				reallyCloseBoids++;
 			}

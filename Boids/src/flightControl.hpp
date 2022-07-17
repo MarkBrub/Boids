@@ -31,6 +31,10 @@ private:
 	// Order: Top, Bottom left, Bottom right
 	const std::vector<Vector2> m_BasePoints = { {0, -6}, {-3, 6}, {3, 6} };
 	std::vector<Boid> m_Boids;
+	// Used for caching
+	int m_VisionRadiusSquared = 0;
+	int m_AvoidanceRadiusSquared = 0;
+	double m_fieldOfViewRange = 0;
 
 	Vector2 Acceleration(const Boid& self);
 	void Bound(Boid& boid);

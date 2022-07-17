@@ -13,10 +13,10 @@ public:
 	virtual void OnUIRender() override {
 		ImGui::Begin("Settings");
 		ImGui::Text("Average Render Time: %.2f", m_QueueTotal / std::max((int)m_FrameLengths.size(), 1));
-		ImGui::SliderInt("Boid Count", &m_BoidCount, 0, 1000, "%d", 0);
-		ImGui::SliderInt("Seperation", &m_SeperationSlider, 0, 30, "%d", 0);
-		ImGui::SliderInt("Alignment", &m_AlignmentSlider, 0, 500, "%d", 0);
-		ImGui::SliderInt("Cohesion", &m_CohesionSlider, 0, 500, "%d", 0);
+		ImGui::SliderInt("Boid Count", &m_BoidCount, 0, 1500, "%d", 0);
+		ImGui::SliderInt("Seperation", &m_SeperationSlider, 0, m_MaxSeperation, "%d", 0);
+		ImGui::SliderInt("Alignment", &m_AlignmentSlider, 0, m_MaxAlignment, "%d", 0);
+		ImGui::SliderInt("Cohesion", &m_CohesionSlider, 0, m_MaxCohesion, "%d", 0);
 		ImGui::SliderInt("Max Speed", &m_MaxSpeed, 0, 20, "%d", 0);
 		ImGui::SliderInt("Vision Radius", &m_VisionRadius, 50, 150, "%d", 0);
 		ImGui::SliderInt("Avoidance Radius", &m_AvoidanceRadius, 10, 30, "%d", 0);
