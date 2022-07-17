@@ -7,12 +7,12 @@ struct Boid {
 	int id = 0;
 	Vector2 position;
 	Vector2 velocity;
-	std::vector<uint8_t> color = { 0, 0, 0 };
+	uint32_t color = 0;
 	Boid(const int maxHeight, const int maxWidth) {
-		position.x = RandomNumberGenerator::getRandomNumber(maxWidth * .05, maxWidth * .95);
-		position.y = RandomNumberGenerator::getRandomNumber(maxHeight * .05, maxHeight * .95);
-		velocity.x = RandomNumberGenerator::getRandomNumber(-3, 3);
-		velocity.y = RandomNumberGenerator::getRandomNumber(-3, 3);
+		position.x = Util::getRandomNumber(maxWidth * .05, maxWidth * .95);
+		position.y = Util::getRandomNumber(maxHeight * .05, maxHeight * .95);
+		velocity.x = Util::getRandomNumber(-3, 3);
+		velocity.y = Util::getRandomNumber(-3, 3);
 	}
 
 	auto operator<=>(const Boid&) const = default;

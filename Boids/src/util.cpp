@@ -1,21 +1,22 @@
 #include "Util.hpp"
 
-std::random_device   RandomNumberGenerator::m_rd;
-std::mt19937         RandomNumberGenerator::m_rng(RandomNumberGenerator::m_rd());
+std::random_device   Util::m_rd;
+std::mt19937         Util::m_rng(Util::m_rd());
 
 //between start and end
 //incluseive of start but not end
-double RandomNumberGenerator::getRandomNumber(const double& rangeStart, const double& rangeEnd) {
+double Util::getRandomNumber(const double& rangeStart, const double& rangeEnd) {
 	std::uniform_real_distribution<> randomizer(rangeStart, rangeEnd);
 	return randomizer(m_rng);
 }
 
-uint32_t Color::toUint32(const uint32_t red, const uint32_t green, const uint32_t blue) {
+uint32_t Util::toUint32(const std::vector<uint32_t>& rgb) {
 	uint32_t out = 0xFF000000;
 
-	out |= blue << 16;
-	out |= green << 8;
-	out |= red;
+	out |= rgb[2] << 16;
+	out |= rgb[1] << 8;
+	out |= rgb[0];
 
 	return out;
 }
+

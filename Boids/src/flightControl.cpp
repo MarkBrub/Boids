@@ -10,7 +10,7 @@ void FlightControl::ChangePopulationSize(const int newCount) {
 		for (int x = m_Boids.size(); x < newCount; x++) {
 			m_Boids.emplace_back(m_Height, m_Width);
 			m_Boids[x].id = x;
-			m_Boids[x].color = m_Colors[x % 4];
+			m_Boids[x].color = Util::toUint32(m_Colors[x % 4]);
 		}
 	} else {
 		m_Boids.erase(m_Boids.begin() + newCount, m_Boids.end());
@@ -33,6 +33,50 @@ void FlightControl::AdvanceFrame() {
 
 void FlightControl::Render(uint32_t* canvas) {
 	for (const auto& boid : m_Boids) {
+		Vector2 top;
+		Vector2 left;
+		Vector2 right;
+
+		double angle = boid.velocity.angle();
+		if (boid.velocity.y >= 0) {
+			angle += std::numbers::pi;
+		}
+
+		top.x = m_BasePoints[0].x * std::cos(angle) - m_BasePoints[0].y * std::sin(angle);
+		top.y = m_BasePoints[0].y * std::cos(angle) + m_BasePoints[0].x * std::sin(angle);
+		left.x = m_BasePoints[1].x * std::cos(angle) - m_BasePoints[1].y * std::sin(angle);
+		left.y = m_BasePoints[1].y * std::cos(angle) + m_BasePoints[1].x * std::sin(angle);
+		right.x = m_BasePoints[2].x * std::cos(angle) - m_BasePoints[2].y * std::sin(angle);
+		right.y = m_BasePoints[2].y * std::cos(angle) + m_BasePoints[2].x * std::sin(angle);
+
+		top *= scale;
+		left *= scale;
+		right *= scale;
+
+		top.x *= -1;
+		left.x *= -1;
+		right.x *= -1;
+
+		top += boid.position;
+		left += boid.position;
+		right += boid.position;
+
+		auto xPair = std::minmax({ top.x, left.x, right.x });
+		auto yPair = std::minmax({ top.y, left.y, right.y });
+
+		int32_t position = 0;
+
+		for (int y = yPair.first; y < yPair.second; y++) {
+			for (int x = xPair.first; x < xPair.second; x++) {
+				if (!inTriangle(Vector2(x, y), top, left, right)) continue;
+				position = x + (m_Width * y);
+				if (position >= m_Width * m_Height) position -= (m_Width * m_Height);
+				if (position <= 0) position += (m_Width * m_Height);
+				canvas[position] = boid.color;
+			}
+		}
+
+		/*
 		uint32_t position = (int)boid.position.x + (m_Width * (int)boid.position.y);
 
 		if (position >= m_Width * m_Height - m_Width - 1 || position <= m_Width + 1) continue;
@@ -46,6 +90,7 @@ void FlightControl::Render(uint32_t* canvas) {
 		canvas[position - 1 + m_Width] = Color::toUint32(boid.color[0], boid.color[1], boid.color[2]);
 		canvas[position + m_Width] = Color::toUint32(boid.color[0], boid.color[1], boid.color[2]);
 		canvas[position + 1 + m_Width] = Color::toUint32(boid.color[0], boid.color[1], boid.color[2]);
+		*/
 	}
 }
 
@@ -62,10 +107,14 @@ Vector2 FlightControl::Acceleration(const Boid& self) {
 	int closeBoids = 0;
 	int reallyCloseBoids = 0;
 
+	// Convert field of view to a [-1, 1] range
+	double fieldOfViewRange = (360 - fieldOfView) / 180 - 1;
+
 	for (auto& boid : m_Boids) {
 		// For all other boids in perception range
-		if (boid != self && dist(boid.position, self.position) < 100) {
-			if (dist(boid.position, self.position) < 20) {
+		if (boid != self && dist(boid.position, self.position) < visionRadius) {
+			if ((boid.position - self.position).normalize() * self.velocity.normalize() < fieldOfViewRange) continue;
+			if (dist(boid.position, self.position) < avoidanceRadius) {
 				seperationVec -= boid.position - self.position;
 				reallyCloseBoids++;
 			}
